@@ -6,9 +6,6 @@ import './App.css';
 function App() {
 	const [name, setName] = useState('');
 	const [image, setImage] = useState('');
-	// const [card, setCard] = useState(false);
-	// const [cash, setCash] = useState(false);
-	// const [upi, setUpi] = useState(false);
 	const [paymentMethods, setPaymentMethods] = useState({
 		card: false,
 		cash: false,
@@ -19,6 +16,7 @@ function App() {
 	const [categories, setCategories] = useState('');
 	const [itemCost, setItemCost] = useState(0);
 	const [restaurents, setRestaurents] = useState([]);
+	const [sortRes, setSortRes] = useState([]);
 
 	const createRestaurent = async e => {
 		e.preventDefault();
@@ -41,7 +39,16 @@ function App() {
 
 	useEffect(() => {
 		fetchRestaurents();
-	}, [restaurents]);
+	}, []);
+
+	const handleSort = (val = 0) => {
+		setSortRes(
+			restaurents
+				.filter(ele => Number(ele.review) > val)
+				.sort((a, b) => Number(a.review) - Number(b.review))
+		);
+	};
+
 	return (
 		<div className='app'>
 			<h1>React Restaurents</h1>
@@ -145,9 +152,22 @@ function App() {
 					<button>Create a new restaurent</button>
 				</form>
 			</div>
-			{restaurents.map(restaurent => (
-				<RestaurantDetails key={restaurent.id} restaurent={restaurent} />
-			))}
+
+			<div className='sort'>
+				<h2>Sort restaurents by rating</h2>
+				<button onClick={() => handleSort(1)}>1 star</button>
+				<button onClick={() => handleSort(2)}>2 star</button>
+				<button onClick={() => handleSort(3)}>3 star</button>
+				<button onClick={() => handleSort(4)}>4 star</button>
+			</div>
+
+			{sortRes.length <= 0
+				? restaurents.map(restaurent => (
+						<RestaurantDetails key={restaurent.id} restaurent={restaurent} />
+				  ))
+				: sortRes.map(restaurent => (
+						<RestaurantDetails key={restaurent.id} restaurent={restaurent} />
+				  ))}
 		</div>
 	);
 }
